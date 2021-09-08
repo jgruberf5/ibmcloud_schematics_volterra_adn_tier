@@ -69,7 +69,7 @@ locals {
   inside_gateway = var.ibm_inside_subnet_id == "" ? "" : var.ibm_inside_gateway == "" ? cidrhost(data.ibm_is_subnet.inside_subnet.ipv4_cidr_block, 1) : var.ibm_inside_gateway
   inside_nic                = "eth1"
   secondary_subnets         = var.ibm_inside_subnet_id == "" ? compact(tolist([])) : compact(tolist([var.ibm_inside_subnet_id]))
-  certified_hardware        = "kvm-multi-nic-voltstack-combo"yes
+  certified_hardware        = "kvm-multi-nic-voltstack-combo"
   template_file             = file("${path.module}/volterra_voltmesh_ce.yaml")
   create_fip_count          = var.volterra_cluster_size
   cluster_masters           = var.volterra_cluster_size > 2 ? 3 : 1
