@@ -4,7 +4,7 @@ data "ibm_resource_group" "group" {
 
 # lookup compute profile by name
 data "ibm_is_instance_profile" "consul_instance_profile" {
-  name = var.ibm_instance_profile
+  name = var.ibm_profile
 }
 
 # lookup image name for a custom image in region if we need it
@@ -18,6 +18,10 @@ data "ibm_is_ssh_key" "ssh_key" {
 
 data "ibm_is_subnet" "consul_subnet" {
   identifier = var.ibm_subnet_id
+}
+
+data "ibm_is_vpc" "consul_vpc" {
+  name = data.ibm_is_subnet.consul_subnet.vpc_name
 }
 
 resource "random_string" "consul_cluster_key" {
@@ -92,7 +96,7 @@ resource "tls_cert_request" "server_02_cert_request" {
   private_key_pem = tls_private_key.server_02_cert.private_key_pem
   dns_names = [
     "localhost",
-    "server.${consul_datacenter}.consul",
+    "server.${var.consul_datacenter}.consul",
     "volterra-discovery.consul"
   ]
   ip_addresses = [
@@ -128,7 +132,7 @@ resource "tls_cert_request" "server_03_cert_request" {
   private_key_pem = tls_private_key.server_03_cert.private_key_pem
   dns_names = [
     "localhost",
-    "server.${consul_datacenter}.consul",
+    "server.${var.consul_datacenter}.consul",
     "volterra-discovery.consul"
   ]
   ip_addresses = [
@@ -194,7 +198,7 @@ locals {
   cluster_master_token = uuid()
   server_agent_token   = uuid()
   client_token         = var.consul_client_token == "" ? uuid() : var.consul_client_token
-  security_group_id    = var.ibm_security_group_id == "" ? data.ibm_is_subnet.consul_subnet.default_security_group : var.ibm_security_group_id
+  security_group_id    = var.ibm_security_group_id == "" ? data.ibm_is_vpc.consul_vpc.default_security_group : var.ibm_security_group_id
 }
 
 data "template_file" "consul_server_01" {

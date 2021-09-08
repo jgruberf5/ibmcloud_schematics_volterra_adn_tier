@@ -10,7 +10,7 @@ module "consul_cluster_vsis" {
   ibm_ssh_key_name      = var.ibm_ssh_key_name
   ibm_security_group_id = ibm_is_vpc.vpc.default_security_group
   ibm_subnet_id         = ibm_is_subnet.internal.id
-  consul_organization   = var.volterra_tenant
+  consul_organization   = var.volterra_tenant_name
   consul_datacenter     = "${var.ibm_vpc_name}-${var.ibm_region}-${var.ibm_zone}"
   consul_client_token   = var.consul_client_token
 }
@@ -30,7 +30,7 @@ module "volterra_cluster" {
   ibm_inside_security_group_id  = ibm_is_vpc.vpc.default_security_group
   ibm_inside_gateway            = cidrhost(ibm_is_subnet.internal.ipv4_cidr_block, 1)
   ibm_inside_networks           = var.ibm_internal_networks
-  volterra_download_region      = var.ibm_download_region
+  volterra_download_region      = var.volterra_download_region
   volterra_ce_version           = var.volterra_ce_version
   volterra_tenant_name          = var.volterra_tenant_name
   volterra_site_name            = "${var.ibm_vpc_name}-${var.ibm_region}-${var.ibm_zone}-${var.ibm_vpc_index}"
