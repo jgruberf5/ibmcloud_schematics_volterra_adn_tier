@@ -1,0 +1,215 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+ - consul
+write_files:
+- owner: root:root
+  path: /etc/consul/ssl/consul-agent-ca.pem
+  permissions: '0644'
+  content: |
+    ${ca_cert_chain}
+- owner: root:root
+  path: /etc/consul/ssl/server-consul-2.pem
+  permissions: '0644'
+  content: |
+    ${server_03_cert}
+- owner: root:root
+  path: /etc/consul/ssl/server-consul-2-key.pem
+  permissions: '0644'
+  content: |
+    ${server_03_key}
+- owner: root:root
+  path: /etc/consul/ssl/client-consul-0.pem
+  permissions: '0644'
+  content: |
+    ${client_cert}
+- owner: root:root
+  path: /etc/consul/ssl/client-consul-0-key.pem
+  permissions: '0644'
+  content: |
+    ${client_key}
+- owner: root:root
+  path: /etc/consul.d/00-server.json
+  permissions: '0644'
+  content: |
+    {
+        "datacenter": "${datacenter}",
+        "data_dir": "/var/lib/consul",
+        "encrypt": "${cluster_encrypt_key}",
+        "leave_on_terminate": true,
+        "rejoin_after_leave": true,
+        "bootstrap": false,
+        "server": true,
+        "addresses": {
+          "https": "0.0.0.0",
+          "dns" : "0.0.0.0"
+        },
+        "ports": {
+          "http": -1,
+          "https": 8501,
+          "dns": 8600,
+          "grpc": -1
+        },
+        "verify_incoming": false,
+        "verify_outgoing": false,
+        "verify_server_hostname": false,
+        "ca_file": "/etc/consul/ssl/consul-agent-ca.pem",
+        "cert_file": "/etc/consul/ssl/server-consul-2.pem",
+        "key_file": "/etc/consul/ssl/server-consul-2-key.pem",
+        "auto_encrypt": {
+          "allow_tls": false
+        },
+        "disable_remote_exec": true,
+        "enable_script_checks": true,
+        "dns_config": {
+            "enable_truncate": true,
+            "only_passing": true
+        },
+        "enable_syslog": true,
+        "ui": true,
+        "start_join": [
+          "${server_1_ip_address}",
+          "${server_2_ip_address}"
+        ]
+    }
+- owner: root:root
+  path: /etc/consul.d/01-acls.json
+  permissions: '0644'
+  content: |
+    {
+      "primary_datacenter": "${datacenter}",
+      "acl": {
+        "enabled": true,
+        "default_policy": "deny",
+        "enable_token_persistence": true,
+        "tokens": {
+            "master": "${cluster_master_token}",
+            "agent" : "${server_agent_token}"
+        }       
+      }
+    }
+- owner: root:root
+  path: /etc/consul/default_policies/consul-services.json
+  permissions: '0644'
+  content: |
+    {
+      "services": [
+        {
+          "id": "adn-consul-https",
+          "name": "adn-consul-https",
+          "address": "__HOST_ADDRESS__",
+          "port": 8501
+        },
+        {
+          "id": "adn-consul-dns",
+          "name": "adn-consul-dns",
+          "address": "__HOST_ADDRESS__",
+          "port": 8600
+        }
+      ]
+    }
+- owner: root:root
+  path: /etc/consul/default_policies/server-agent-policy.hcl
+  permissions: '0644'
+  content: |
+    agen_prefix "" {
+      policy = "write"
+    }
+    key_prefix "" {
+      policy = "write"
+    }
+    node_prefix "" {
+      policy = "write"
+    }
+    service_prefix "" {
+      policy = "write"
+    }
+    event_prefix "" {
+      policy = "write"
+    }
+    query_prefix "" {
+      policy = "write"
+    }
+- owner: root:root
+  path: /etc/consul/default_policies/default-policy.hcl
+  permissions: '0644'
+  content: |
+    node_prefix "" {
+      policy = "read"
+    }
+    
+    service_prefix "" {
+      policy = "read"
+    }
+- owner: root:root
+  path: /etc/consul/default_policies/node-service-write.hcl
+  permissions: '0644'
+  content: |
+    node_prefix "" {
+      policy = "write"
+    }
+    
+    service_prefix "" {
+      policy = "write"
+    }
+- owner: root:root
+  path: /etc/consul/client.env
+  permissions: '0644'
+  content: |
+    export CONSUL_CLIENT_CERT=/etc/consul/ssl/client-consul-0.pem
+    export CONSUL_CLIENT_KEY=/etc/consul/ssl/client-consul-0-key.pem
+    export CONSUL_CACERT=/etc/consul/ssl/consul-agent-ca.pem
+    export CONSUL_HTTP_SSL=true
+    export CONSUL_HTTP_ADDR=https://127.0.0.1:8501
+    export CONSUL_HTTP_TOKEN='${cluster_master_token}'
+- owner: root:root
+  path: /etc/consul/default_policies/set_default_policies.sh
+  permissions: '0755'
+  content: |
+    #!/bin/bash
+    source /etc/consul/client.env
+    # Wait until the cluster is up and the anonymous ACL token shows up
+    anon_token=$(/usr/bin/consul acl token list|grep 'Anonymous Token'|wc -l)
+    while [[ "$anon_token" != "1" ]]
+    do
+      sleep 5
+      exit 0
+    done
+    # Server agent has full access
+    server_agent_policy=$(/usr/bin/consul acl policy list|grep server-agent|wc -l)
+    if [[ "$server_agent_policy" -eq "0" ]]
+    then
+      /usr/bin/consul acl policy create -name server-agent -rules @/etc/consul/default_policies/server-agent-policy.hcl
+      /usr/bin/consul acl token create -accessor='${server_agent_token}' -secret='${server_agent_token}' -policy-name='server-agent'
+    fi
+    # Assure anonymous read and token read-write
+    read_policy=$(/usr/bin/consul acl policy list|grep default-read|wc -l)
+    if [[ "$read_policy" -eq "0" ]]
+    then
+      /usr/bin/consul acl policy create -name default-read -rules @/etc/consul/default_policies/default-policy.hcl
+      /usr/bin/consul acl token update -id 00000000-0000-0000-0000-000000000002 -policy-name default-read
+    fi
+    read_write_policy=$(/usr/bin/consul acl policy list|grep node-service-write|wc -l)
+    if [[ "$read_write_policy" -eq "0" ]]
+    then
+      /usr/bin/consul acl policy create -name node-service-write -rules @/etc/consul/default_policies/node-service-write.hcl
+      /usr/bin/consul acl token create -accessor='${client_token}' -secret='${client_token}' -policy-name='node-service-write'
+    fi
+    # keep local services registered
+    host_address=$(ip route get 1.1.1.1 | grep -oP 'src \K\S+')
+    /usr/bin/sed -i "s/__HOST_ADDRESS__/$host_address/g" /etc/consul/default_policies/consul-services.json
+    /usr/bin/consul services register /etc/consul/default_policies/consul-services.json
+- owner: root:root
+  path: /etc/cron.d/setup_default_policies
+  permissions: '0644'
+  content: |
+    @reboot root /etc/consul/default_policies/set_default_policies.sh &
+    */5 * * * * root /etc/consul/default_policies/set_default_policies.sh &
+runcmd:
+  - [ systemctl, daemon-reload ]
+  - [ systemctl, enable, consul.service ]
+  - [ systemctl, start, --no-block, consul.service ]
+power_state:
+  mode: reboot
+  condition: True

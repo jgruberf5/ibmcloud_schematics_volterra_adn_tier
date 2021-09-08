@@ -1,0 +1,36 @@
+#cloud-config
+chpasswd:
+  expire: false
+  list: |
+    admin:${admin_password}
+write_files:
+- path: /etc/vpm/basic-auth.json
+  permissions: '0644'
+  content: |
+    [{"username": "admin", "password": "${admin_password}"}]
+- path: /etc/vpm/config.yaml
+  permissions: '0644'
+  content: |
+    Kubernetes:
+      EtcdUseTLS: True
+      Server: vip
+    Vpm:
+      ClusterName: ${cluster_name}
+      CertifiedHardware: ${certified_hardware}
+      ClusterType: ce
+      Config: /etc/vpm/config.yaml
+      PrivateNIC: eth0
+      InsideNIC: ${inside_nic}
+      Latitude: ${latitude}
+      Longitude: ${longitude}
+      MauriceEndpoint: https://register.ves.volterra.io
+      MauricePrivateEndpoint: https://register-tls.ves.volterra.io
+      Token: ${site_token}
+      Labels:
+        provider: IBM
+        region: ${region}
+        hw-model: ${profile}
+        hw-vendor: ibm-vpc-gen2
+        ves.io/fleet: ${fleet_label}
+bootcmd:
+  - /usr/bin/touch /etc/vpm/passwdchanged
