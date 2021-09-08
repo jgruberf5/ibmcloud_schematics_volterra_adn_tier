@@ -1,4 +1,4 @@
-# Creating Volterra CE Site in an Existing VPC
+# Volterra CE Site in an Existing VPC
 
 ![Workspace Diagram](../../assets/ibmcloud_schematices_adn_ce_only_diagram.jpg)
 

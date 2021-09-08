@@ -1,4 +1,4 @@
-# Creating Consul Cluster in Existing VPC
+# Consul Cluster in Existing VPC
 
 ![Workspace Diagram](../../assets/ibmcloud_schematices_adn_consul_only_diagram.jpg)
 
