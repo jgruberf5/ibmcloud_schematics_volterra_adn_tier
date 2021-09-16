@@ -1,7 +1,3 @@
-data "ibm_resource_group" "group" {
-  name = var.ibm_resource_group
-}
-
 # lookup compute profile by name
 data "ibm_is_instance_profile" "consul_instance_profile" {
   name = var.ibm_profile

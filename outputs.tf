@@ -1,25 +1,25 @@
 output "vpc_id" {
-  value = ibm_is_vpc.vpc.id
+  value = module.ibm_vpc.vpc_id
   description = "ADC VPC identifier"
 }
 
 output "internal_subnet_id" {
-  value = ibm_is_subnet.internal.id
+  value = module.ibm_vpc.vpc_internal_subnet_id
   description = "ADC VPC internal subnet indentifier"
 }
 
 output "internal_subnet_cidr" {
-  value = ibm_is_subnet.internal.ipv4_cidr_block
+  value = module.ibm_vpc.vpc_internal_subnet_cidr
   description = "ADC internal IPv4 CIDR"
 }
 
 output "external_subnet_id" {
-  value = ibm_is_subnet.external.id
+  value = module.ibm_vpc.vpc_external_subnet_id
   description = "ADC VPC external subnet indentifier"
 }
 
 output "external_subnet_cidr" {
-  value = ibm_is_subnet.external.ipv4_cidr_block
+  value = module.ibm_vpc.vpc_external_subnet_cidr
   description = "ADC external IPv4 CIDR"
 }
 

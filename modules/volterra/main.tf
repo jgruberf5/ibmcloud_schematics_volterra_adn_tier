@@ -1,7 +1,3 @@
-data "ibm_resource_group" "group" {
-  name = var.ibm_resource_group
-}
-
 data "ibm_is_ssh_key" "ssh_key" {
   name = var.ibm_ssh_key_name
 }
@@ -74,6 +70,7 @@ locals {
   create_fip_count          = var.volterra_cluster_size
   cluster_masters           = var.volterra_cluster_size > 2 ? 3 : 1
   fleet_label = var.volterra_fleet_label == "" ? "${var.volterra_site_name}-fleet" : var.volterra_fleet_label
+  create_volterra_site      = var.volterra_cluster_size > 0 ? 1 : 0
 }
 
 # lookup compute profile by name
@@ -88,6 +85,7 @@ resource "local_file" "complete_flag" {
 }
 
 resource "null_resource" "site" {
+  count          = local.create_volterra_site
   triggers = {
     tenant          = var.volterra_tenant_name
     token           = var.volterra_api_token
@@ -119,12 +117,14 @@ resource "null_resource" "site" {
 }
 
 data "local_file" "site_token" {
+  count      = local.create_volterra_site
   filename   = "${path.module}/${var.volterra_site_name}_site_token.txt"
   depends_on = [null_resource.site]
 }
 
 
 data "template_file" "user_data" {
+  count    = local.create_volterra_site
   template = local.template_file
   vars = {
     admin_password     = local.admin_password
@@ -133,7 +133,7 @@ data "template_file" "user_data" {
     certified_hardware = local.certified_hardware
     latitude           = lookup(local.vpc_gen2_region_location_map, var.ibm_region).latitude
     longitude          = lookup(local.vpc_gen2_region_location_map, var.ibm_region).longitude
-    site_token         = data.local_file.site_token.content
+    site_token         = data.local_file.site_token.0.content
     profile            = var.ibm_profile
     inside_nic         = local.inside_nic
     region             = var.ibm_region
@@ -166,7 +166,7 @@ resource "ibm_is_instance" "ce_instance" {
   vpc       = data.ibm_is_subnet.outside_subnet.vpc
   zone      = data.ibm_is_subnet.outside_subnet.zone
   keys      = [data.ibm_is_ssh_key.ssh_key.id]
-  user_data = data.template_file.user_data.rendered
+  user_data = data.template_file.user_data.0.rendered
   timeouts {
     create = "60m"
     delete = "120m"
@@ -182,7 +182,7 @@ resource "ibm_is_floating_ip" "external_floating_ip" {
 }
 
 resource "null_resource" "site_registration" {
-
+  count = local.create_volterra_site
   triggers = {
     site                = var.volterra_site_name,
     tenant              = var.volterra_tenant_name
