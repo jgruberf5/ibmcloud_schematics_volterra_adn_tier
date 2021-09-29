@@ -193,7 +193,7 @@ resource "null_resource" "site_registration" {
     voltstack           = "false"
   }
 
-  depends_on = [ibm_is_instance.ce_instance]
+  depends_on = [ibm_is_instance.ce_instance, ibm_is_floating_ip.external_floating_ip]
 
   provisioner "local-exec" {
     when       = create
