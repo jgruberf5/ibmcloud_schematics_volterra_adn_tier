@@ -62,14 +62,14 @@ locals {
   }
   outside_security_group_id = var.ibm_outside_security_group_id == "" ? data.ibm_is_vpc.volterra_vpc.default_security_group : var.ibm_outside_security_group_id
   inside_security_group_id  = var.ibm_inside_subnet_id == "" ? "" : var.ibm_inside_security_group_id == "" ? data.ibm_is_vpc.volterra_vpc.default_security_group : var.ibm_inside_security_group_id
-  inside_gateway = var.ibm_inside_subnet_id == "" ? "" : var.ibm_inside_gateway == "" ? cidrhost(data.ibm_is_subnet.inside_subnet.ipv4_cidr_block, 1) : var.ibm_inside_gateway
+  inside_gateway            = var.ibm_inside_subnet_id == "" ? "" : var.ibm_inside_gateway == "" ? cidrhost(data.ibm_is_subnet.inside_subnet.ipv4_cidr_block, 1) : var.ibm_inside_gateway
   inside_nic                = "eth1"
   secondary_subnets         = var.ibm_inside_subnet_id == "" ? compact(tolist([])) : compact(tolist([var.ibm_inside_subnet_id]))
   certified_hardware        = "kvm-multi-nic-voltstack-combo"
   template_file             = file("${path.module}/volterra_voltmesh_ce.yaml")
   create_fip_count          = var.volterra_cluster_size
   cluster_masters           = var.volterra_cluster_size > 2 ? 3 : 1
-  fleet_label = var.volterra_fleet_label == "" ? "${var.volterra_site_name}-fleet" : var.volterra_fleet_label
+  fleet_label               = var.volterra_fleet_label == "" ? "${var.volterra_site_name}-fleet" : var.volterra_fleet_label
   create_volterra_site      = var.volterra_cluster_size > 0 ? 1 : 0
 }
 
@@ -85,7 +85,7 @@ resource "local_file" "complete_flag" {
 }
 
 resource "null_resource" "site" {
-  count          = local.create_volterra_site
+  count = local.create_volterra_site
   triggers = {
     tenant          = var.volterra_tenant_name
     token           = var.volterra_api_token
