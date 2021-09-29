@@ -7,7 +7,7 @@ import time
 
 from urllib.error import HTTPError
 
-PENDING_TIMEOUT = 300
+PENDING_TIMEOUT = 900
 PENDING_WAIT = 30
 
 # REGISGTRATION_STATES = [ 'NOTSET', 'NEW', 'APPROVED', 'ADMITTED', 'RETIRED', 'FAILED', 'DONE', 'PENDING', 'ONLINE', 'UPGRADING', 'MAINTENANCE' ]
@@ -193,6 +193,9 @@ def main():
                             sys.stdout.write("approved registration %s for node %s\n" % (
                                 reg['name'], reg['get_spec']['infra']['hostname']))
                             counted_registrations = counted_registrations + 1
+                        else:
+                            sys.stderr('registration for registration %s failed.. failing resource' % reg['name'])
+                            sys.exit(1)
                     elif reg['object']['status']['current_state'] in COUNT_REGISTRATION_STATES:
                         counted_registrations = counted_registrations + 1
                     if counted_registrations == args.size:
@@ -200,6 +203,7 @@ def main():
         sys.stderr.write(
             "no registrations pending approval after %d seconds.. giving up.\n" % PENDING_TIMEOUT)
         sys.stdout.flush()
+        sys.exit(1)
 
     if args.action == "sitedelete":
         if args.voltstack == "true":
