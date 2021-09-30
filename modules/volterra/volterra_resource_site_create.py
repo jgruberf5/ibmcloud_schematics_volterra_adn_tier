@@ -652,6 +652,7 @@ def main():
         os.unlink(site_token_file)
     with open(site_token_file, "w") as site_token_file:
         site_token_file.write(site_token)
+    sys.stdout.write('Created registration token for the site: %s' % site_token)
     sys.exit(0)
 
 
