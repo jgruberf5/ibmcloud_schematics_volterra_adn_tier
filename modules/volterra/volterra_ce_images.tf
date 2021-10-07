@@ -16,7 +16,3 @@ data "external" "volterra_public_image" {
 #    delete = "60m"
 #  }
 #}
-
-data "ibm_is_image" "ce_image" {
-    identifier = data.external.volterra_public_image.result.image_id
-}

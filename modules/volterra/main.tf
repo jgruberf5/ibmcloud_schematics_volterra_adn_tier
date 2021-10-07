@@ -147,7 +147,7 @@ resource "ibm_is_instance" "ce_instance" {
   name           = "${var.volterra_site_name}-vce-${count.index}"
   resource_group = data.ibm_resource_group.group.id
   #image          = ibm_is_image.ce_custom_image.id
-  image          = data.ibm_is_image.ce_image.id
+  image          = data.external.volterra_public_image.result.image_id
   profile        = data.ibm_is_instance_profile.instance_profile.id
   primary_network_interface {
     name              = "outside"
