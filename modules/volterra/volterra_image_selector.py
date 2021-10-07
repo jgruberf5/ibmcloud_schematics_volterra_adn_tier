@@ -50,18 +50,21 @@ def main():
     max_match = 0
     image_url = None
     image_name = None
+    image_id = None
     for image in image_catalog[region]:
         match_length = longest_substr(image['image_name'], ce_version_match)
         if match_length >= max_match:
             max_match = match_length
             image_url = image['image_sql_url']
             image_name = image['image_name']
+            image_id = image['image_id']
     if not image_url:
         sys.stderr.write(
             'No image in the public image catalog matched version %s' % ce_version_match)
         sys.exit(1)
     jsondata['image_sql_url'] = image_url
     jsondata['image_name'] = image_name
+    jsondata['image_id'] = image_id
     sys.stdout.write(json.dumps(jsondata))
 
 
