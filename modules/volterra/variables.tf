@@ -102,13 +102,13 @@ variable "volterra_cluster_size" {
 }
 
 ##################################################################################
-# volterra_download_region - The VPC region to Download the Public COS Images
+# volterra_download_region - Deprecated
 ##################################################################################
-variable "volterra_download_region" {
-  type        = string
-  default     = "us-south"
-  description = "The VPC region to Download the Public COS Images"
-}
+#variable "volterra_download_region" {
+#  type        = string
+#  default     = "us-south"
+#  description = "The VPC region to Download the Public COS Images"
+#}
 
 ##################################################################################
 # volterra_version - The version of Volterra CE image to Import

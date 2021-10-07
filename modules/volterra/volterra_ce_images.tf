@@ -2,7 +2,7 @@
 data "external" "volterra_public_image" {
   program = ["python3", "${path.module}/volterra_image_selector.py"]
   query = {
-    download_region = var.volterra_download_region
+    region = var.ibm_region
     version_prefix  = var.volterra_ce_version
   }
 }

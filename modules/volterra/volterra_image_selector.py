@@ -5,7 +5,7 @@ import json
 import urllib.request
 import difflib
 
-PUBLIC_REGIONS = ['us-south', 'us-east', 'eu-gb', 'eu-de', 'jp-tok', 'au-syd']
+PUBLIC_REGIONS = ['us-south', 'us-east', 'eu-gb', 'eu-de', 'jp-tok', 'jp-osa', 'au-syd', 'ca-tor']
 
 
 def get_public_images(region):
@@ -34,18 +34,20 @@ def longest_substr(catalog_image_name, version_prefix):
 
 def main():
     jsondata = json.loads(sys.stdin.read())
-    if 'download_region' not in jsondata:
+    if 'region' not in jsondata:
         sys.stderr.write(
-            'type, download_region, verion_prefix inputs require to query public volterra images')
+            'region, verion_prefix inputs require to query public volterra images')
         sys.exit(1)
     if 'version_prefix' not in jsondata:
         sys.stderr.write(
-            'type, download_region, verion_prefix inputs require to query public volterra images')
+            'region, verion_prefix inputs require to query public volterra images')
         sys.exit(1)
     ce_version_match = jsondata['version_prefix'].lower().replace('.', '-')
-    region = jsondata['download_region'].lower()
+    region = jsondata['region'].lower()
     if region not in PUBLIC_REGIONS:
-        region = 'us-south'
+        sys.stderr.write(
+            'public volterra CE images are not supported in region: %s. Use a custom VPC image.' % region)
+        sys.exit(1)
     image_catalog = get_public_images(region)
     max_match = 0
     image_url = None
