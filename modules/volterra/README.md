@@ -31,7 +31,6 @@ You will have to define the following variables:
 | `ibm_inside_gateway` | The inside subnet IP address to route all internal networks through | optional | first CIDR address available in the inside subnet |
 | `ibm_internal_networks` | List of HCL object defining IPv4 CIDRs (cidr attribute) and IPv4 gateway (gw attribute) to connect via the CE VSIs | optional | [] |
 | `volterra_cluster_size` | The number of Volterra CE instances in the site cluster | optional | 3 |
-| `volterra_download_region` | The IBM COS region to download the custom images | optional | us-south |
 | `volterra_ce_version` | The Volterra version to download from the F5 COS catalog | optional | 7.2009.5 |
 | `volterra_tenant_name` | The Volterra tenant (group) name | required | |
 | `volterra_site_name` | The Volterra site name to create for this cluster | required | |
