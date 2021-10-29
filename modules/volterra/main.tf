@@ -58,6 +58,10 @@ locals {
     "us-south" = {
       "latitude"  = "32.7924",
       "longitude" = "-96.8147"
+    },
+    "br-sao" = {
+      "latitude"  = "-23.5558",
+      "longitude" = "-46.6396"
     }
   }
   outside_security_group_id = var.ibm_outside_security_group_id == "" ? data.ibm_is_vpc.volterra_vpc.default_security_group : var.ibm_outside_security_group_id
