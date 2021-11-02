@@ -45,7 +45,6 @@ module "volterra_cluster" {
   ibm_inside_security_group_id  = module.ibm_vpc.vpc_default_security_group_id
   ibm_inside_gateway            = module.ibm_vpc.vpc_inside_gateway
   ibm_inside_networks           = var.ibm_internal_networks
-  volterra_download_region      = var.volterra_download_region
   volterra_ce_version           = var.volterra_ce_version
   volterra_tenant_name          = var.volterra_tenant_name
   volterra_site_name            = "${var.ibm_vpc_name}-${var.ibm_region}-${var.ibm_zone}-${var.ibm_vpc_index}"
