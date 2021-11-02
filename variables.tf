@@ -82,15 +82,6 @@ variable "volterra_include_ce" {
 }
 
 ##################################################################################
-# volterra_download_region - The VPC region to Download the Public COS Images
-##################################################################################
-variable "volterra_download_region" {
-  type        = string
-  default     = "us-south"
-  description = "The VPC region to Download the Public COS Images"
-}
-
-##################################################################################
 # volterra_ce_version - The IBM VPC profile for CE
 ##################################################################################
 variable "volterra_ce_profile" {
