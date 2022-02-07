@@ -236,6 +236,7 @@ resource "ibm_is_instance" "consul_server_01_instance" {
 }
 data "template_file" "consul_server_02" {
   template = file("${path.module}/consul_server_02.yaml")
+  count    = var.consul_cluster_size > 1 ? 1 : 0
   vars = {
     ca_cert_chain        = indent(4, tls_self_signed_cert.ca_cert.cert_pem)
     server_02_cert       = indent(4, tls_locally_signed_cert.server_02_signed.cert_pem)
@@ -266,7 +267,7 @@ resource "ibm_is_instance" "consul_server_02_instance" {
   vpc       = data.ibm_is_subnet.consul_subnet.vpc
   zone      = data.ibm_is_subnet.consul_subnet.zone
   keys      = [data.ibm_is_ssh_key.ssh_key.id]
-  user_data = data.template_file.consul_server_02.rendered
+  user_data = data.template_file.consul_server_02.0.rendered
   timeouts {
     create = "60m"
     delete = "120m"
@@ -275,6 +276,7 @@ resource "ibm_is_instance" "consul_server_02_instance" {
 
 data "template_file" "consul_server_03" {
   template = file("${path.module}/consul_server_03.yaml")
+  count    = var.consul_cluster_size > 2 ? 1 : 0
   vars = {
     ca_cert_chain        = indent(4, tls_self_signed_cert.ca_cert.cert_pem)
     server_03_cert       = indent(4, tls_locally_signed_cert.server_03_signed.cert_pem)
@@ -306,7 +308,7 @@ resource "ibm_is_instance" "consul_server_03_instance" {
   vpc       = data.ibm_is_subnet.consul_subnet.vpc
   zone      = data.ibm_is_subnet.consul_subnet.zone
   keys      = [data.ibm_is_ssh_key.ssh_key.id]
-  user_data = data.template_file.consul_server_03.rendered
+  user_data = data.template_file.consul_server_03.0.rendered
   timeouts {
     create = "60m"
     delete = "120m"
