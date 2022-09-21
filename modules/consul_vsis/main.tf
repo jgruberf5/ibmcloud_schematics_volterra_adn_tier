@@ -70,7 +70,7 @@ resource "tls_cert_request" "server_01_cert_request" {
 
 resource "tls_locally_signed_cert" "server_01_signed" {
   cert_request_pem      = tls_cert_request.server_01_cert_request.cert_request_pem
-  ca_key_algorithm      = "ECDSA"
+  # ca_key_algorithm      = "ECDSA"
   ca_private_key_pem    = tls_private_key.ca_key.private_key_pem
   ca_cert_pem           = tls_self_signed_cert.ca_cert.cert_pem
   validity_period_hours = 87659
@@ -106,7 +106,7 @@ resource "tls_cert_request" "server_02_cert_request" {
 
 resource "tls_locally_signed_cert" "server_02_signed" {
   cert_request_pem      = tls_cert_request.server_02_cert_request.cert_request_pem
-  ca_key_algorithm      = "ECDSA"
+  # ca_key_algorithm      = "ECDSA"
   ca_private_key_pem    = tls_private_key.ca_key.private_key_pem
   ca_cert_pem           = tls_self_signed_cert.ca_cert.cert_pem
   validity_period_hours = 87659
@@ -124,7 +124,7 @@ resource "tls_private_key" "server_03_cert" {
 }
 
 resource "tls_cert_request" "server_03_cert_request" {
-  key_algorithm   = tls_private_key.server_03_cert.algorithm
+  # key_algorithm   = tls_private_key.server_03_cert.algorithm
   private_key_pem = tls_private_key.server_03_cert.private_key_pem
   dns_names = [
     "localhost",
@@ -142,7 +142,7 @@ resource "tls_cert_request" "server_03_cert_request" {
 
 resource "tls_locally_signed_cert" "server_03_signed" {
   cert_request_pem      = tls_cert_request.server_03_cert_request.cert_request_pem
-  ca_key_algorithm      = "ECDSA"
+  # ca_key_algorithm      = "ECDSA"
   ca_private_key_pem    = tls_private_key.ca_key.private_key_pem
   ca_cert_pem           = tls_self_signed_cert.ca_cert.cert_pem
   validity_period_hours = 87659
@@ -178,7 +178,7 @@ resource "tls_cert_request" "client_cert_request" {
 
 resource "tls_locally_signed_cert" "client_signed" {
   cert_request_pem      = tls_cert_request.client_cert_request.cert_request_pem
-  ca_key_algorithm      = "ECDSA"
+  # ca_key_algorithm      = "ECDSA"
   ca_private_key_pem    = tls_private_key.ca_key.private_key_pem
   ca_cert_pem           = tls_self_signed_cert.ca_cert.cert_pem
   validity_period_hours = 87659
