@@ -30,7 +30,7 @@ resource "tls_private_key" "ca_key" {
   ecdsa_curve = "P256"
 }
 resource "tls_self_signed_cert" "ca_cert" {
-  key_algorithm   = "ECDSA"
+  # key_algorithm   = "ECDSA"
   private_key_pem = tls_private_key.ca_key.private_key_pem
   subject {
     common_name  = "${var.consul_datacenter}-ca.consul"
@@ -52,7 +52,7 @@ resource "tls_private_key" "server_01_cert" {
 }
 
 resource "tls_cert_request" "server_01_cert_request" {
-  key_algorithm   = tls_private_key.server_01_cert.algorithm
+  # key_algorithm   = tls_private_key.server_01_cert.algorithm
   private_key_pem = tls_private_key.server_01_cert.private_key_pem
   dns_names = [
     "localhost",
@@ -88,7 +88,7 @@ resource "tls_private_key" "server_02_cert" {
 }
 
 resource "tls_cert_request" "server_02_cert_request" {
-  key_algorithm   = tls_private_key.server_02_cert.algorithm
+  # key_algorithm   = tls_private_key.server_02_cert.algorithm
   private_key_pem = tls_private_key.server_02_cert.private_key_pem
   dns_names = [
     "localhost",
@@ -160,7 +160,7 @@ resource "tls_private_key" "client_cert" {
 }
 
 resource "tls_cert_request" "client_cert_request" {
-  key_algorithm   = tls_private_key.client_cert.algorithm
+  # key_algorithm   = tls_private_key.client_cert.algorithm
   private_key_pem = tls_private_key.client_cert.private_key_pem
   dns_names = [
     "localhost",
