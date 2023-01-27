@@ -11,7 +11,7 @@ PUBLIC_REGIONS = ['us-south', 'us-east', 'eu-gb', 'eu-de', 'jp-tok', 'jp-osa', '
 def get_public_images(region):
     if not region:
         region = 'us-south'
-    catalog_url = "https://volterra-ce-%s.s3.%s.cloud-object-storage.appdomain.cloud/volterra-image-catalog.json" % (
+    catalog_url = "https://f5xc-ce-%s.s3.%s.cloud-object-storage.appdomain.cloud/f5xc-ce-image-catalog.json" % (
         region, region)
     try:
         response = urllib.request.urlopen(catalog_url)
